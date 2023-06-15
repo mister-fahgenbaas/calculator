@@ -1,30 +1,25 @@
-const screen = document.querySelector("#screen");
-const buttons = document.querySelectorAll("button");
-let displayValue = 0;
-let lhs, rhs, op;
-let input = [];
-ops = {
-		'add'		: add,
-		'subtract'	: subtract,
-		'multiply'	: multiply,
-		'divide'	: divide,
-		'evaluate'	: evaluate
-};
+let x = '';
+let y = '';
+let operator = '';
 
+screen = document.querySelector("#screen");
+buttons = document.querySelectorAll(".button");
+btnDigits = document.querySelectorAll(".digit")
+btnOperators = document.querySelectorAll(".operator");
+btnEquals = document.querySelector("#equals");
+btnClear = document.querySelector("#clear");
 
-function clearScreen() {
+function clear() {
+	x = y = operator = '';
 	screen.textContent = '0';
 }
-function clearInputQueue() {
-	input = [];
-}	
 
 function add(x, y) {
 	return x + y;
 }
 
-function negate(x) {
-	return -1 * x;
+function subtract(x, y) {
+	return x - y;
 }
 
 function multiply(x, y) {
@@ -32,43 +27,25 @@ function multiply(x, y) {
 }
 
 function divide(x, y) {
-	if (y === 0) {
-		clearScreen();
-		screen.textContent = "err";
-	}
-	return x / y;
+	return (y === 0) ? "err" : (x / y);
 }
 
-function subtract(x, y) {
-	return x - y;
-}
-
-function evaluate() {
-	// don't do anything if input queue is empty
-	if (input.length === 0)
-		return; 
-	
-	for (let i = 0; i < input.length; ++i) {
-		if (!parseInt(input[i])) {  // if not a number, i.e. it's an operator
-			lhs = parseInt(input.slice(0, i).join(''));
-			rhs = parseInt(input.slice(i + 1).join(''));
-			op = input[i];
-			break;
-		}
-	}	
-	// perform the evaluation
-	console.log(op, ops[op], lhs, rhs);
-	console.log(ops[op](lhs, rhs));
-	input = [];
-}
-
-function updateScreen() {
-	screen.textContent = input.join(' ');
+function operate() {
+	const operations = {
+			"add" 		: add,
+			"subtract" 	: subtract,
+			"multiply" 	: multiply,
+			"divide" 	: divide
+	};
+	const X = parseInt(x);
+	const Y = parseInt(y);
+	screen.textContent = operations[operator](X, Y);
+	x = y = operator = '';
 }
 
 
+// create a visual effect of buttons being physically pressed
 buttons.forEach((button) => {
-	// Highlight buttons when pressed. Remove highlight when released
 	button.addEventListener("mousedown", (e) => {
 		e.target.classList.add("pressed");
 	});
@@ -78,26 +55,31 @@ buttons.forEach((button) => {
 	button.addEventListener("mouseout", (e) => {
 		e.target.classList.remove("pressed");	
 	});
-
-	// calculate logic depending on input
-	button.addEventListener("click", (e) => {
-		if (e.target.id === 'clear') {
-			clearScreen();
-			clearInputQueue();    // clear the input queue
-			return;
-		}
-		else if (e.target.id === 'evaluate') {
-			evaluate(input);
-			clearScreen();
-			clearInputQueue();
-			return;
-		}
-		input.push(e.target.id);
-		updateScreen();
-	});
-
 });
 
+btnDigits.forEach((btn) => {
+	btn.addEventListener("click", (e) => {
+		if (operator === '') {
+			x += e.target.id;
+			screen.textContent = parseInt(x); // strips leading zeros
+		}
+		else { 
+			y += e.target.id;
+			screen.textContent = parseInt(y);
+		}
+	});
+});
 
+btnOperators.forEach((btn) => {
+	btn.addEventListener("click", (e) => {
+		if (x !== '')
+			operator = e.target.id;
+	});
+});
 
+btnEquals.addEventListener("click", () => {
+	if (x !== '' && y !== '' && operator !== '')
+		operate();
+});
 
+btnClear.addEventListener("click", clear);
