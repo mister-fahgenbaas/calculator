@@ -7,12 +7,12 @@
 #calculator {
 	background-color: #2B2A4C;
 	border: 4px ridge #b53939;
-	width: 200px;
+	width: 207px;
 	padding: 5px;
 }
 
 #screen {
-	width: 198px;
+	width: 202px;
 	height: 40px;
 	font-size: 2em;
 	color: grey;
@@ -40,6 +40,7 @@ button {
 
 #equals {
 	flex: 1 auto;
+	background-color: #60BF4D;
 }
 
 #clear {
@@ -61,4 +62,8 @@ button {
 	background-color: red !important;
 	box-shadow: none;
 	transform: translateX(2px) translateY(2px);
+}
+
+button.operator {
+	background-color: rgb(200, 60, 180);
 }

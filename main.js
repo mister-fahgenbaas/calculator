@@ -2,12 +2,13 @@ let x = '';
 let y = '';
 let operator = '';
 
-screen = document.querySelector("#screen");
-buttons = document.querySelectorAll(".button");
-btnDigits = document.querySelectorAll(".digit")
-btnOperators = document.querySelectorAll(".operator");
-btnEquals = document.querySelector("#equals");
-btnClear = document.querySelector("#clear");
+const screen = document.querySelector("#screen");
+const buttons = document.querySelectorAll(".button");
+const btnDigits = document.querySelectorAll(".digit")
+const btnOperators = document.querySelectorAll(".operator");
+const btnEquals = document.querySelector("#equals");
+const btnClear = document.querySelector("#clear");
+const maxDigits = 10;
 
 function clear() {
 	x = y = operator = '';
@@ -39,8 +40,11 @@ function operate() {
 	};
 	const X = parseInt(x);
 	const Y = parseInt(y);
-	screen.textContent = operations[operator](X, Y);
-	x = y = operator = '';
+	let ans = operations[operator](X, Y);
+
+	ans = parseFloat(ans).toFixed(maxDigits - 2);
+	ans = Math.round(ans);
+	return ans;
 }
 
 
@@ -59,27 +63,39 @@ buttons.forEach((button) => {
 
 btnDigits.forEach((btn) => {
 	btn.addEventListener("click", (e) => {
-		if (operator === '') {
-			x += e.target.id;
-			screen.textContent = parseInt(x); // strips leading zeros
-		}
-		else { 
-			y += e.target.id;
-			screen.textContent = parseInt(y);
+		if (screen.textContent.length < maxDigits) {
+				if (operator === '') {
+					x += e.target.id;
+					screen.textContent = parseInt(x); // strips leading zeros
+				}
+				else { 
+					y += e.target.id;
+					screen.textContent = parseInt(y);
+				}
 		}
 	});
 });
 
 btnOperators.forEach((btn) => {
 	btn.addEventListener("click", (e) => {
+		if (operator !== '') {  // a second operator is entered
+			x = screen.textContent = operate();
+			y = '';
+		}
 		if (x !== '')
 			operator = e.target.id;
 	});
 });
 
 btnEquals.addEventListener("click", () => {
-	if (x !== '' && y !== '' && operator !== '')
-		operate();
+	if (x !== '' && operator === '')
+		screen.textContent = x;
+    else if (x !== '' && y !== '' && operator !== '')
+		screen.textContent = operate();
+	else if (operator !== '' && y === '')
+		screen.textContent = "err";
+
+	x = y = operator = '';
 });
 
 btnClear.addEventListener("click", clear);
